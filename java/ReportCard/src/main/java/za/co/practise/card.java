@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class card {
     private static final Map<String,double[]> percentage = new HashMap<>();
-    private static Scanner sc;
+    private static final Scanner sc = new Scanner(System.in);
 
     static {
         percentage.put("A", new double[]{93,100});
@@ -26,25 +26,54 @@ public class card {
     }
 
     public static void main(String[] args) {
+        System.out.println("MATH - Report Card");
         int number = getTestNumber();
         double avg = getTestScores(number);
+        String grade = determineGrade(avg);
+        System.out.println("Percentage: "+avg+"%");
+        System.out.println("Grade: "+grade);
+    }
+
+    private static String determineGrade(double avg) {
+        for (Map.Entry<String,double[]> entrypoint : percentage.entrySet()){
+            double[] range = entrypoint.getValue();
+
+            if (avg >= range[0] && avg <= range[1]){
+                return entrypoint.getKey();
+            }
+        }
+        return null;
     }
 
     private static double getTestScores(int number) {
+        double avg = 0;
+        int total = 0;
+        int totalTest = 100 * number;
         try {
-            for (int i = 0; i < number; i++) {
-                
+            for (int i = 1; i < number+1; i++) {
+                System.out.print("Enter Test "+ i +" score:");
+                int score = sc.nextInt();
 
+                if (0 <= score && score<= 100){
+                    total += score;
+                }else {
+                    System.out.println("Invalid entry");
+                    total += 0;
+                    sc.next();
+                }
             }
+            
+            avg = (double) (total * 100) / totalTest;
+            return avg;
+
         }catch (InputMismatchException e){
             System.out.println("Invalid Entry");
         }
-        return 0;
+        return avg;
     }
-
     private static int getTestNumber() {
         try {
-            sc = new Scanner(System.in);
+            System.out.print("\nHow Many Test have You Written: ");
             return sc.nextInt();
         }catch (InputMismatchException e){
             System.out.println("Invalid Entry");
