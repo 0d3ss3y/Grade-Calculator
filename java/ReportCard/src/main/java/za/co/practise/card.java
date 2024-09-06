@@ -26,12 +26,16 @@ public class card {
     }
 
     public static void main(String[] args) {
-        System.out.println("MATH - Report Card");
+        System.out.println("Report Card");
         int number = getTestNumber();
-        double avg = getTestScores(number);
-        String grade = determineGrade(avg);
-        System.out.println("Percentage: "+avg+"%");
-        System.out.println("Grade: "+grade);
+
+        if (number > 0) {
+            double avg = getTestScores(number);
+            String grade = determineGrade(avg);
+            System.out.printf("Your average score is %.2f, which corresponds to a grade of %s.%n", avg, grade);
+        } else {
+            System.out.println("No tests to process.");
+        }
     }
 
     private static String determineGrade(double avg) {
@@ -42,43 +46,46 @@ public class card {
                 return entrypoint.getKey();
             }
         }
-        return null;
+        return "F";
     }
 
     private static double getTestScores(int number) {
-        double avg = 0;
         int total = 0;
-        int totalTest = 100 * number;
-        try {
-            for (int i = 1; i < number+1; i++) {
-                System.out.print("Enter Test "+ i +" score:");
+        int entries = 100 * number;
+        for (int i = 1; i <= number; i++) {
+            try {
+                System.out.print("Enter Test " + i + " score: ");
                 int score = sc.nextInt();
-
-                if (0 <= score && score<= 100){
+                if (score < 0 || score > 100) {
+                    System.out.println("Score must be between 0 and 100. Try again.");
+                    i--;
+                } else {
                     total += score;
-                }else {
-                    System.out.println("Invalid entry");
-                    total += 0;
-                    sc.next();
+                    entries++;
                 }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid entry. Please enter a valid integer.");
+                sc.next();
+                i--;
             }
-            
-            avg = (double) (total * 100) / totalTest;
-            return avg;
-
-        }catch (InputMismatchException e){
-            System.out.println("Invalid Entry");
         }
-        return avg;
+        return entries > 0 ? (double) total / entries : 0;
     }
-    private static int getTestNumber() {
-        try {
-            System.out.print("\nHow Many Test have You Written: ");
-            return sc.nextInt();
-        }catch (InputMismatchException e){
-            System.out.println("Invalid Entry");
-        }
 
-        return 0;
+
+    private static int getTestNumber() {
+       System.out.print("Enter the number of tests: ");
+        try {
+            int numberofTests = sc.nextInt();
+            if (numberofTests <= 0) {
+                System.out.println("Number of tests must be greater than 0.");
+                return 0;
+            }
+            return numberofTests;
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid entry. Please enter a valid integer.");
+            sc.next();
+            return 0;
+        }
     }
 }
